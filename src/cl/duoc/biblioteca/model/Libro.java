@@ -4,14 +4,14 @@ public class Libro {
     private int id;
     private String titulo;
     private String autor;
-    private int isbn;
+    private String isbn;
     private String editorial;
     private int stock;
     private int idCategoria;
 
     public Libro() {}
 
-    public Libro(int id, String titulo, String autor, int isbn, String editorial, int stock, int idCategoria) {
+    public Libro(int id, String titulo, String autor, String isbn, String editorial, int stock, int idCategoria) {
         this.id = id;
         this.titulo = titulo;
         this.autor = autor;
@@ -45,11 +45,11 @@ public class Libro {
         this.autor = autor;
     }
 
-    public int getIsbn() {
+    public String getIsbn() {
         return isbn;
     }
 
-    public void setIsbn(int isbn) {
+    public void setIsbn(String isbn) {
         this.isbn = isbn;
     }
 
