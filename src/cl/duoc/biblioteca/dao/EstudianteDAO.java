@@ -1,4 +1,4 @@
-package cl.duoc.bibloteca.dao;
+package cl.duoc.biblioteca.dao;
 
 public class EstudianteDAO {
 }
