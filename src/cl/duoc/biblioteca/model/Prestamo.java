@@ -3,20 +3,25 @@ package cl.duoc.biblioteca.model;
 import java.util.Date;
 
 public class Prestamo {
+
     private int id;
     private int idEstudiante;
     private int idLibro;
     private Date fechaPrestamo;
     private Date fechaDevolucion;
+    private boolean devuelto;
 
-    public Prestamo() {}
+    public Prestamo() {
+    }
 
-    public Prestamo(int id, int idEstudiante, int idLibro, Date fechaPrestamo, Date fechaDevolucion) {
+    public Prestamo(int id, int idEstudiante, int idLibro,
+                    Date fechaPrestamo, Date fechaDevolucion) {
         this.id = id;
         this.idEstudiante = idEstudiante;
         this.idLibro = idLibro;
         this.fechaPrestamo = fechaPrestamo;
         this.fechaDevolucion = fechaDevolucion;
+        this.devuelto = false;
     }
 
     public int getId() {
@@ -57,5 +62,13 @@ public class Prestamo {
 
     public void setFechaDevolucion(Date fechaDevolucion) {
         this.fechaDevolucion = fechaDevolucion;
+    }
+
+    public boolean isDevuelto() {
+        return devuelto;
+    }
+
+    public void setDevuelto(boolean devuelto) {
+        this.devuelto = devuelto;
     }
 }
