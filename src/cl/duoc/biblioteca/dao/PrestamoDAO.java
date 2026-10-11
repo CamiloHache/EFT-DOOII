@@ -85,6 +85,7 @@ public class PrestamoDAO {
             if (con != null) {
                 try {
                     con.setAutoCommit(true);
+                    con.close();
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
@@ -178,6 +179,7 @@ public class PrestamoDAO {
             if (con != null) {
                 try {
                     con.setAutoCommit(true);
+                    con.close();
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }

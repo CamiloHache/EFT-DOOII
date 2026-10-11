@@ -287,40 +287,65 @@ public class VentanaPrincipal extends JFrame {
         int id = obtenerIdSeleccionado(tablaLibros);
         if (id == -1) return;
 
+        int fila = tablaLibros.getSelectedRow();
+
+        String titulo = pedirTexto("Nuevo título:",
+                tablaLibros.getValueAt(fila, 1).toString());
+        if (titulo == null) return;
+
+        String autor = pedirTexto("Nuevo autor:",
+                tablaLibros.getValueAt(fila, 2).toString());
+        if (autor == null) return;
+
+        String isbn = pedirTexto("Nuevo ISBN:",
+                tablaLibros.getValueAt(fila, 3).toString());
+        if (isbn == null) return;
+
+        String editorial = pedirTexto("Nueva editorial:",
+                tablaLibros.getValueAt(fila, 4).toString());
+        if (editorial == null) return;
+
+        String textoStock = pedirTexto("Nuevo stock:",
+                tablaLibros.getValueAt(fila, 5).toString());
+        if (textoStock == null) return;
+
+        String textoCategoria = pedirTexto("ID de categoría:",
+                tablaLibros.getValueAt(fila, 6).toString());
+        if (textoCategoria == null) return;
+
+        if (titulo.trim().isEmpty() || autor.trim().isEmpty()
+                || isbn.trim().isEmpty() || editorial.trim().isEmpty()
+                || textoStock.trim().isEmpty()
+                || textoCategoria.trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this,
+                    "Todos los campos son obligatorios.");
+            return;
+        }
+
         try {
-            String titulo = pedirTexto("Nuevo título:", tablaLibros.getValueAt(
-                    tablaLibros.getSelectedRow(), 1).toString());
-            if (titulo == null) return;
+            int stock = Integer.parseInt(textoStock.trim());
+            int categoria = Integer.parseInt(textoCategoria.trim());
 
-            String autor = pedirTexto("Nuevo autor:", tablaLibros.getValueAt(
-                    tablaLibros.getSelectedRow(), 2).toString());
-            if (autor == null) return;
+            if (stock < 0) {
+                JOptionPane.showMessageDialog(this,
+                        "El stock no puede ser negativo.");
+                return;
+            }
 
-            String isbn = pedirTexto("Nuevo ISBN:", tablaLibros.getValueAt(
-                    tablaLibros.getSelectedRow(), 3).toString());
-            if (isbn == null) return;
-
-            String editorial = pedirTexto("Nueva editorial:", tablaLibros.getValueAt(
-                    tablaLibros.getSelectedRow(), 4).toString());
-            if (editorial == null) return;
-
-            int stock = Integer.parseInt(pedirTexto("Nuevo stock:",
-                    tablaLibros.getValueAt(tablaLibros.getSelectedRow(), 5).toString()));
-
-            int categoria = Integer.parseInt(pedirTexto("ID de categoría:",
-                    tablaLibros.getValueAt(tablaLibros.getSelectedRow(), 6).toString()));
-
-            Libro libro = new Libro(id, titulo, autor, isbn, editorial, stock, categoria);
+            Libro libro = new Libro(id, titulo.trim(), autor.trim(),
+                    isbn.trim(), editorial.trim(), stock, categoria);
 
             if (libroDAO.update(libro)) {
                 JOptionPane.showMessageDialog(this, "Libro actualizado.");
                 cargarLibros();
             } else {
-                JOptionPane.showMessageDialog(this, "No se pudo actualizar el libro.");
+                JOptionPane.showMessageDialog(this,
+                        "No se pudo actualizar el libro. Verifica el ID de categoría.");
             }
 
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Datos inválidos.");
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this,
+                    "El stock y el ID de categoría deben ser números enteros.");
         }
     }
 
@@ -377,36 +402,41 @@ public class VentanaPrincipal extends JFrame {
 
         int fila = tablaEstudiantes.getSelectedRow();
 
-        try {
-            String nombre = pedirTexto("Nombre:",
-                    tablaEstudiantes.getValueAt(fila, 1).toString());
-            if (nombre == null) return;
+        String nombre = pedirTexto("Nombre:",
+                tablaEstudiantes.getValueAt(fila, 1).toString());
+        if (nombre == null) return;
 
-            String rut = pedirTexto("RUT:",
-                    tablaEstudiantes.getValueAt(fila, 2).toString());
-            if (rut == null) return;
+        String rut = pedirTexto("RUT:",
+                tablaEstudiantes.getValueAt(fila, 2).toString());
+        if (rut == null) return;
 
-            String curso = pedirTexto("Curso:",
-                    tablaEstudiantes.getValueAt(fila, 3).toString());
-            if (curso == null) return;
+        String curso = pedirTexto("Curso:",
+                tablaEstudiantes.getValueAt(fila, 3).toString());
+        if (curso == null) return;
 
-            String correo = pedirTexto("Correo:",
-                    tablaEstudiantes.getValueAt(fila, 4).toString());
-            if (correo == null) return;
+        String correo = pedirTexto("Correo:",
+                tablaEstudiantes.getValueAt(fila, 4).toString());
+        if (correo == null) return;
 
-            Estudiante estudiante = new Estudiante(id, nombre, rut, curso, correo);
+        if (nombre.trim().isEmpty() || rut.trim().isEmpty()
+                || curso.trim().isEmpty() || correo.trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this,
+                    "Todos los campos son obligatorios.");
+            return;
+        }
 
-            if (estudianteDAO.actualizar(estudiante)) {
-                JOptionPane.showMessageDialog(this, "Estudiante actualizado.");
-                cargarEstudiantes();
-            } else {
-                JOptionPane.showMessageDialog(this, "No se pudo actualizar.");
-            }
+        Estudiante estudiante = new Estudiante(id, nombre.trim(),
+                rut.trim(), curso.trim(), correo.trim());
 
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Datos inválidos.");
+        if (estudianteDAO.actualizar(estudiante)) {
+            JOptionPane.showMessageDialog(this, "Estudiante actualizado.");
+            cargarEstudiantes();
+        } else {
+            JOptionPane.showMessageDialog(this,
+                    "No se pudo actualizar el estudiante.");
         }
     }
+
 
     private void eliminarEstudiante() {
         int id = obtenerIdSeleccionado(tablaEstudiantes);
@@ -430,6 +460,20 @@ public class VentanaPrincipal extends JFrame {
     private void registrarPrestamo() {
         int idLibro = obtenerIdSeleccionado(tablaLibros);
         if (idLibro == -1) return;
+        int filaSeleccionada = tablaLibros.getSelectedRow();
+        int stockActual = Integer.parseInt(
+                tablaLibros.getValueAt(filaSeleccionada, 5).toString()
+        );
+
+        if (stockActual <= 0) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Este libro no tiene ejemplares disponibles.",
+                    "Stock agotado",
+                    JOptionPane.WARNING_MESSAGE
+            );
+            return;
+        }
 
         String textoId = pedirTexto("Ingresa el ID del estudiante:", "");
         if (textoId == null) return;
