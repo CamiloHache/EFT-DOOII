@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="SqlDialectMappings">
+    <file url="file://$PROJECT_DIR$/src/cl/duoc/biblioteca/sql/01_crear_base_datos.sql" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/src/cl/duoc/biblioteca/sql/02_datos_prueba.sql" dialect="GenericSQL" />
+  </component>
+</project>

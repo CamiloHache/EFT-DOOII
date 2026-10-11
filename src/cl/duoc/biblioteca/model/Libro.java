@@ -1,6 +1,7 @@
 package cl.duoc.biblioteca.model;
 
-public class Libro {
+public class Libro implements Identificable{
+
     private int id;
     private String titulo;
     private String autor;
@@ -75,5 +76,10 @@ public class Libro {
 
     public void setIdCategoria(int idCategoria) {
         this.idCategoria = idCategoria;
+    }
+
+    @Override
+    public String getNombre() {
+        return titulo;
     }
 }
