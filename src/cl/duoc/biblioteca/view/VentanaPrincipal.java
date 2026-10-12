@@ -30,10 +30,12 @@ public class VentanaPrincipal extends JFrame {
     private JTable tablaLibros;
     private JTable tablaEstudiantes;
     private JTable tablaPrestamos;
+    private JTable tablaCategorias;
 
     private DefaultTableModel modeloLibros;
     private DefaultTableModel modeloEstudiantes;
     private DefaultTableModel modeloPrestamos;
+    private DefaultTableModel modeloCategorias;
 
     public VentanaPrincipal(Usuario usuario) {
         usuarioActual = usuario;
@@ -111,6 +113,43 @@ public class VentanaPrincipal extends JFrame {
 
         pestañas.addTab("Estudiantes", panelEstudiantes);
 
+
+        // Categorías
+        JPanel panelCategorias = new JPanel(new BorderLayout());
+
+        modeloCategorias = new DefaultTableModel(
+                new String[]{"ID", "Nombre"}, 0) {
+            @Override
+            public boolean isCellEditable(int fila, int columna) {
+                return false;
+            }
+        };
+
+        tablaCategorias = new JTable(modeloCategorias);
+        panelCategorias.add(
+                new JScrollPane(tablaCategorias), BorderLayout.CENTER);
+
+        JPanel botonesCategorias = new JPanel();
+
+        JButton btnActualizarCategorias = new JButton("Actualizar");
+        JButton btnCrearCategoria = new JButton("Registrar categoría");
+        JButton btnEditarCategoria = new JButton("Modificar categoría");
+        JButton btnEliminarCategoria = new JButton("Eliminar categoría");
+
+        botonesCategorias.add(btnActualizarCategorias);
+        botonesCategorias.add(btnCrearCategoria);
+        botonesCategorias.add(btnEditarCategoria);
+        botonesCategorias.add(btnEliminarCategoria);
+
+        panelCategorias.add(botonesCategorias, BorderLayout.SOUTH);
+        pestañas.addTab("Categorías", panelCategorias);
+
+        btnActualizarCategorias.addActionListener(e -> cargarCategorias());
+        btnCrearCategoria.addActionListener(e -> registrarCategoria());
+        btnEditarCategoria.addActionListener(e -> modificarCategoria());
+        btnEliminarCategoria.addActionListener(e -> eliminarCategoria());
+
+
         // Préstamos pendientes
         JPanel panelPrestamos = new JPanel(new BorderLayout());
         modeloPrestamos = new DefaultTableModel(
@@ -167,10 +206,12 @@ public class VentanaPrincipal extends JFrame {
         btnEditarLibro.setVisible(esBibliotecario);
         btnEliminarLibro.setVisible(esBibliotecario);
         pestañas.setEnabledAt(1, esBibliotecario);
+        pestañas.setEnabledAt(2, esBibliotecario);
 
         cargarLibros();
         cargarEstudiantes();
         cargarPrestamosActivos();
+        cargarCategorias();
 
         btnActualizarLibros.addActionListener(e -> cargarLibros());
         btnActualizarEstudiantes.addActionListener(e -> cargarEstudiantes());
@@ -599,4 +640,89 @@ public class VentanaPrincipal extends JFrame {
 
         JOptionPane.showMessageDialog(this, texto.toString());
     }
+
+    private void cargarCategorias() {
+        modeloCategorias.setRowCount(0);
+
+        for (Categoria categoria : categoriaDAO.listarTodos()) {
+            modeloCategorias.addRow(new Object[]{
+                    categoria.getId(),
+                    categoria.getNombre()
+            });
+        }
+    }
+
+    private void registrarCategoria() {
+        String nombre = pedirTexto("Nombre de la categoría:", "");
+
+        if (nombre == null) return;
+
+        if (nombre.trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this,
+                    "El nombre de la categoría es obligatorio.");
+            return;
+        }
+
+        Categoria categoria = new Categoria(0, nombre.trim());
+
+        if (categoriaDAO.crear(categoria)) {
+            JOptionPane.showMessageDialog(this,
+                    "Categoría registrada correctamente.");
+            cargarCategorias();
+        } else {
+            JOptionPane.showMessageDialog(this,
+                    "No se pudo registrar. Verifica que el nombre no exista.");
+        }
+    }
+
+    private void modificarCategoria() {
+        int id = obtenerIdSeleccionado(tablaCategorias);
+        if (id == -1) return;
+
+        int fila = tablaCategorias.getSelectedRow();
+
+        String nombre = pedirTexto("Nuevo nombre:",
+                tablaCategorias.getValueAt(fila, 1).toString());
+
+        if (nombre == null) return;
+
+        if (nombre.trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this,
+                    "El nombre de la categoría es obligatorio.");
+            return;
+        }
+
+        Categoria categoria = new Categoria(id, nombre.trim());
+
+        if (categoriaDAO.actualizar(categoria)) {
+            JOptionPane.showMessageDialog(this,
+                    "Categoría actualizada correctamente.");
+            cargarCategorias();
+        } else {
+            JOptionPane.showMessageDialog(this,
+                    "No se pudo actualizar. Verifica que el nombre no exista.");
+        }
+    }
+
+    private void eliminarCategoria() {
+        int id = obtenerIdSeleccionado(tablaCategorias);
+        if (id == -1) return;
+
+        int confirmacion = JOptionPane.showConfirmDialog(this,
+                "¿Eliminar la categoría seleccionada?",
+                "Confirmar eliminación",
+                JOptionPane.YES_NO_OPTION);
+
+        if (confirmacion != JOptionPane.YES_OPTION) return;
+
+        if (categoriaDAO.eliminar(id)) {
+            JOptionPane.showMessageDialog(this,
+                    "Categoría eliminada correctamente.");
+            cargarCategorias();
+        } else {
+            JOptionPane.showMessageDialog(this,
+                    "No se pudo eliminar. Puede tener libros asociados.");
+        }
+    }
+
 }
